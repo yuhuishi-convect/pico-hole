@@ -19,7 +19,8 @@ const pollInterval = 5 * time.Millisecond
 
 func main() {
 	time.Sleep(2 * time.Second) // Allow USB serial to become available.
-	println("Pico W static web server starting")
+	println("Pico W web server and DNS filter starting")
+	serviceStatus.start()
 	if wifiSSID == "" || wifiSSID == "YOUR_WIFI_NAME" {
 		halt("set wifiSSID and wifiPassword in secrets.go, then rebuild")
 	}
@@ -31,6 +32,7 @@ func main() {
 	stack, err := cywnet.NewConfiguredPicoWithStack(wifiSSID, wifiPassword, cfg, cywnet.StackConfig{
 		Hostname:          "pico-webserver",
 		MaxActiveTCPPorts: 1,
+		MaxActiveUDPPorts: 1,
 	})
 	if err != nil {
 		halt("Wi-Fi setup failed: " + err.Error())
@@ -41,6 +43,7 @@ func main() {
 	if err != nil {
 		halt("DHCP failed: " + err.Error())
 	}
+	serviceStatus.setNetwork(ipv4.String(lease.AssignedAddr4))
 	pool, err := xnet.NewTCPPool(xnet.TCPPoolConfig{
 		PoolSize:           3,
 		QueueSize:          3,
@@ -60,6 +63,12 @@ func main() {
 	if err = stack.LnetoStack().RegisterListenerTCP(&listener); err != nil {
 		halt("register listener failed: " + err.Error())
 	}
+	serviceStatus.setHTTPReady(true)
+	go func() {
+		if err := serveDNSServer(stack.LnetoStack()); err != nil {
+			halt("DNS server failed: " + err.Error())
+		}
+	}()
 	webAddress := "http://" + ipv4.String(lease.AssignedAddr4) + "/"
 	printWebAddress(webAddress)
 	println("DHCP lease seconds:", lease.TLease)

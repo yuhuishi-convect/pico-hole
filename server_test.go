@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -15,6 +16,28 @@ type testConn struct {
 	input  *strings.Reader
 	output bytes.Buffer
 	closed bool
+}
+
+func TestStatusEndpoint(t *testing.T) {
+	c := &testConn{input: strings.NewReader("GET /api/status HTTP/1.1\r\nHost: pico\r\n\r\n")}
+	if err := serveHTTP(c); err != nil {
+		t.Fatal(err)
+	}
+	resp, err := http.ReadResponse(bufio.NewReader(&c.output), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK || resp.Header.Get("Content-Type") != "application/json; charset=utf-8" {
+		t.Fatalf("status=%d content-type=%q", resp.StatusCode, resp.Header.Get("Content-Type"))
+	}
+	var snapshot dashboardSnapshot
+	if err := json.NewDecoder(resp.Body).Decode(&snapshot); err != nil {
+		t.Fatal(err)
+	}
+	if snapshot.HTTPStatus == "" || snapshot.DNSStatus == "" || snapshot.WiFiStatus == "" {
+		t.Fatalf("status endpoint omitted service states: %+v", snapshot)
+	}
 }
 
 func (c *testConn) Read(p []byte) (int, error)  { return c.input.Read(p[:min(7, len(p))]) }

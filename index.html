@@ -3,21 +3,146 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hello from Pico W</title>
+  <meta name="theme-color" content="#101b23">
+  <title>Pico W service dashboard</title>
   <style>
-    body { margin: 0; background: #ecf4ef; color: #173e2d; font-family: system-ui, sans-serif; }
-    main { max-width: 38rem; margin: 12vh auto; padding: 2rem; }
-    article { padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 8px 30px #173e2d15; }
-    h1 { margin-top: 0; }
-    p { line-height: 1.65; }
-    code { background: #ecf4ef; padding: .15rem .35rem; border-radius: .3rem; }
+    :root { color-scheme: light; --ink: #172b35; --muted: #69808a; --line: #dce7e7; --mint: #1b8a69; --mint-pale: #e5f5ed; --paper: #f2f7f5; --white: #fff; --amber: #a46819; --amber-pale: #fff3dd; --red: #ac5148; --red-pale: #fff0ed; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { width: min(100% - 32px, 920px); margin: 0 auto; padding: 38px 0 28px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .mark { display: grid; width: 46px; height: 46px; place-items: center; border-radius: 14px; background: #173d35; color: #b7f2d5; font-size: 14px; font-weight: 800; letter-spacing: .04em; }
+    .eyebrow, .label { margin: 0; color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 3px 0 0; font-size: clamp(21px, 4vw, 27px); letter-spacing: -.035em; }
+    .live { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid #c4e8d5; border-radius: 999px; background: var(--mint-pale); color: #176a50; font-size: 11px; font-weight: 750; letter-spacing: .08em; }
+    .live-dot, .service-dot { width: 8px; height: 8px; border-radius: 50%; background: #b3bdc0; }
+    .live-dot { background: #249a70; box-shadow: 0 0 0 3px #249a7020; }
+    .hero { display: flex; align-items: end; justify-content: space-between; gap: 22px; min-height: 154px; padding: 28px 30px; border-radius: 20px; background: #142b32; color: white; box-shadow: 0 12px 28px #1d3a3815; }
+    .hero .eyebrow { color: #9db9b6; }
+    h2 { margin: 8px 0 7px; font-size: clamp(27px, 5vw, 36px); letter-spacing: -.045em; }
+    .hero p:last-child { margin: 0; color: #bbcdca; font-size: 14px; }
+    .address { min-width: 215px; padding: 13px 15px; border: 1px solid #ffffff22; border-radius: 12px; background: #ffffff0c; }
+    .address span { display: block; margin-bottom: 7px; color: #9db9b6; font-size: 10px; font-weight: 750; letter-spacing: .12em; }
+    .address a { color: #d0f4df; font: 600 15px ui-monospace, SFMono-Regular, Menlo, monospace; text-decoration: none; }
+    .services { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 24px; }
+    .service { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px 17px; border: 1px solid var(--line); border-radius: 13px; background: var(--white); }
+    .service-name { display: flex; align-items: center; gap: 9px; color: #45606a; font-size: 12px; font-weight: 700; }
+    .service-state { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+    .service.online .service-dot { background: #249a70; box-shadow: 0 0 0 3px #249a7018; }
+    .service.online .service-state { color: var(--mint); }
+    .stats-heading { display: flex; align-items: end; justify-content: space-between; gap: 12px; margin: 0 2px 11px; }
+    h3 { margin: 0; font-size: 15px; letter-spacing: -.01em; }
+    .stats-note { color: var(--muted); font-size: 11px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .stat { min-height: 112px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
+    .stat strong { display: block; margin-top: 12px; font-size: 30px; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+    .stat .label { letter-spacing: .08em; }
+    .stat.blocked strong { color: var(--amber); }
+    .stat.errors strong { color: var(--red); }
+    footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; color: var(--muted); font-size: 11px; }
+    @media (max-width: 620px) {
+      main { width: min(100% - 22px, 920px); padding-top: 23px; }
+      .hero { align-items: stretch; flex-direction: column; padding: 23px; }
+      .address { min-width: 0; }
+      .services { grid-template-columns: 1fr; gap: 8px; margin-top: 10px; }
+      .service { padding: 13px 15px; }
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat { min-height: 100px; padding: 15px; }
+      .stat strong { font-size: 26px; }
+      footer { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
-  <main><article>
-    <h1>Hello from your Pico W!</h1>
-    <p>This page is served directly from a Raspberry Pi Pico W running TinyGo on your local Wi-Fi network.</p>
-    <p>Edit <code>index.html</code>, rebuild, and flash your Pico to change this page.</p>
-  </article></main>
+  <main>
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">PW</div>
+        <div><p class="eyebrow">Local network service</p><h1>Pico W dashboard</h1></div>
+      </div>
+      <div class="live"><span class="live-dot" aria-hidden="true"></span>LIVE STATUS</div>
+    </header>
+
+    <section class="hero" aria-labelledby="overall-status">
+      <div>
+        <p class="eyebrow">Device status</p>
+        <h2 id="overall-status">Connecting…</h2>
+        <p id="status-detail">Waiting for the Pico W status endpoint.</p>
+      </div>
+      <div class="address">
+        <span>OPEN THIS DEVICE</span>
+        <a id="device-address" href="/">Waiting for DHCP…</a>
+      </div>
+    </section>
+
+    <section class="services" aria-label="Service status">
+      <article class="service" id="service-wifi"><span class="service-name"><i class="service-dot"></i>Wi-Fi / DHCP</span><strong class="service-state">STARTING</strong></article>
+      <article class="service" id="service-http"><span class="service-name"><i class="service-dot"></i>Web · TCP 80</span><strong class="service-state">STARTING</strong></article>
+      <article class="service" id="service-dns"><span class="service-name"><i class="service-dot"></i>DNS · UDP 53</span><strong class="service-state">STARTING</strong></article>
+    </section>
+
+    <section aria-labelledby="stats-title">
+      <div class="stats-heading"><h3 id="stats-title">Since last boot</h3><span class="stats-note">Status polls are excluded from HTTP count</span></div>
+      <div class="stats">
+        <article class="stat"><span class="label">Uptime</span><strong id="uptime">—</strong></article>
+        <article class="stat"><span class="label">HTTP requests</span><strong id="http-requests">0</strong></article>
+        <article class="stat"><span class="label">DNS queries</span><strong id="dns-queries">0</strong></article>
+        <article class="stat blocked"><span class="label">Blocked</span><strong id="blocked-queries">0</strong></article>
+        <article class="stat"><span class="label">Forwarded</span><strong id="forwarded-queries">0</strong></article>
+        <article class="stat errors"><span class="label">DNS errors</span><strong id="dns-errors">0</strong></article>
+      </div>
+    </section>
+
+    <footer><span>Refreshes every 3 seconds</span><span id="last-update">Connecting…</span><span>TinyGo · Raspberry Pi Pico W</span></footer>
+  </main>
+  <script>
+    const byId = (id) => document.getElementById(id);
+    const number = new Intl.NumberFormat();
+    function setService(id, status) {
+      const card = byId(id);
+      const online = status === 'online';
+      card.classList.toggle('online', online);
+      card.querySelector('.service-state').textContent = online ? 'ONLINE' : 'OFFLINE';
+    }
+    function formatUptime(seconds) {
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor(seconds % 86400 / 3600);
+      const minutes = Math.floor(seconds % 3600 / 60);
+      if (days) return `${days}d ${hours}h`;
+      if (hours) return `${hours}h ${minutes}m`;
+      return `${minutes}m`;
+    }
+    async function refresh() {
+      try {
+        const response = await fetch('/api/status', { cache: 'no-store' });
+        if (!response.ok) throw new Error('status endpoint unavailable');
+        const data = await response.json();
+        setService('service-wifi', data.wifi_status);
+        setService('service-http', data.http_status);
+        setService('service-dns', data.dns_status);
+        const allOnline = data.wifi_status === 'online' && data.http_status === 'online' && data.dns_status === 'online';
+        byId('overall-status').textContent = allOnline ? 'All services running' : 'Service starting';
+        byId('status-detail').textContent = allOnline ? 'Your Pico W is serving the dashboard and DNS on the local network.' : 'Waiting for Wi-Fi, DHCP, and both listeners to come online.';
+        const address = byId('device-address');
+        address.textContent = data.ip || 'No DHCP address';
+        address.href = data.ip ? `http://${data.ip}/` : '/';
+        byId('uptime').textContent = formatUptime(data.uptime_seconds);
+        byId('http-requests').textContent = number.format(data.http_requests);
+        byId('dns-queries').textContent = number.format(data.dns_queries);
+        byId('blocked-queries').textContent = number.format(data.blocked_queries);
+        byId('forwarded-queries').textContent = number.format(data.forwarded_queries);
+        byId('dns-errors').textContent = number.format(data.dns_errors);
+        byId('last-update').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+      } catch (_) {
+        byId('overall-status').textContent = 'Status unavailable';
+        byId('status-detail').textContent = 'The device did not answer the last status check.';
+        byId('last-update').textContent = 'Waiting to reconnect…';
+        for (const id of ['service-wifi', 'service-http', 'service-dns']) setService(id, 'offline');
+      }
+    }
+    refresh();
+    setInterval(refresh, 3000);
+  </script>
 </body>
 </html>

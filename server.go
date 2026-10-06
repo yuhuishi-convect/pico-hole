@@ -58,9 +58,14 @@ func serveHTTP(conn httpConn) error {
 		return respond(conn, "405 Method Not Allowed", "text/plain", []byte("Use GET or HEAD\n"), false, "Allow: GET, HEAD\r\n")
 	}
 	path, _, _ := strings.Cut(string(hdr.RequestTarget()), "?")
+	if path != "/api/status" {
+		serviceStatus.recordHTTPRequest()
+	}
 	switch path {
 	case "/", "/index.html":
 		return respond(conn, "200 OK", "text/html; charset=utf-8", webPage, headOnly, "")
+	case "/api/status":
+		return respond(conn, "200 OK", "application/json; charset=utf-8", dashboardJSON(), headOnly, "Cache-Control: no-store\r\n")
 	case "/favicon.ico":
 		return respond(conn, "204 No Content", "", nil, true, "")
 	default:

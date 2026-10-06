@@ -1,8 +1,9 @@
-# Pico W static web server with TinyGo
+# Pico W web server and DNS filter with TinyGo
 
 Join an existing Wi-Fi network, get an IPv4 address using DHCP, and serve
 `index.html` directly from the Pico W's flash on HTTP port 80. No extra hardware
-is needed beyond a Pico W, USB data cable, and a router.
+is needed beyond a Pico W, USB data cable, and a router. The project also has an
+early DNS-filter port based on [ESP_hole](https://github.com/twedds95/ESP_hole).
 
 ## Configure
 
@@ -125,10 +126,41 @@ go test ./...
 
 Host tests exercise fragmented requests and partial writes, GET/HEAD, query
 strings, 404/405/204 responses, malformed and oversized headers, and incomplete
-requests. The firmware has been compiled for `pico-w` and flashed onto the
-connected board. Wi-Fi association, DHCP, and an HTTP GET from this computer
-were verified; the HTTP 200 response matches `index.html` byte for byte.
-The current board address is `http://192.168.68.65/` (DHCP may change it).
+requests. The DNS policy and request/response tests pass, and the firmware builds
+for `pico-w`. The dashboard is flashed and responds at `http://192.168.68.65/`.
+A disposable Podman client configured with `--dns=192.168.68.65` successfully
+resolved `example.com` over both A and AAAA. The host DNS settings were not
+changed. DHCP may assign a different Pico address later.
+
+## DNS filter port
+
+Port 80 serves a responsive dashboard and a JSON status endpoint at `/api/status`.
+It shows Wi-Fi/DHCP, HTTP and DNS listener state, uptime, HTTP requests, DNS
+queries, blocked and forwarded counts, and DNS errors. The firmware listens on
+UDP port 53 and includes Pi-hole's commonly installed StevenBlack Unified
+hosts list (72,233 domains in the checked-in snapshot). Add local exceptions in
+`allowedDomains` or extra entries in `blockedDomains` in `dns_policy.go`. Rules
+match the domain and its subdomains, case-insensitively; allow entries override
+the built-in and custom block rules. Blocked A/AAAA lookups return
+`0.0.0.0`/`::`. See [BLOCKLIST.md](BLOCKLIST.md) for the source, memory use,
+matcher, update, and test details.
+
+This initial version handles one DNS question at a time and resolves upstream
+queries serially. Use it as a small LAN filter, not as a high-throughput DNS
+service. It does not configure your router or other clients automatically.
+Run `./test-dns-podman.sh 192.168.68.65` to test A and AAAA lookups from a
+disposable Podman client. The script sets DNS only inside that container, so the
+computer running Podman keeps its existing DNS configuration. After adding and
+flashing rules, pass a blocked name and an allowed exception to also check the
+sink response and the allowlist override:
+
+```sh
+./test-dns-podman.sh 192.168.68.65 img.ads.example safe.ads.example
+```
+
+Host tests cover the compiled common list, case-insensitive suffix matching,
+subdomain boundaries, allowlist precedence, blocked sink answers, and that
+blocked requests never reach the upstream resolver.
 
 The pinned `lneto` TCP stack requires `NewBackoff` in `TCPPoolConfig`.
 Keep the explicit `tcpBackoff` function when changing the networking setup.
@@ -136,8 +168,9 @@ Keep the explicit `tcpBackoff` function when changing the networking setup.
 ## Benchmark
 
 For measured throughput and repeatable load-test commands, see
-[BENCHMARK.md](BENCHMARK.md). The current firmware achieved approximately 20 QPS
-with zero failures in a 30-second paced Wi-Fi test.
+[BENCHMARK.md](BENCHMARK.md). The earlier small static-page firmware achieved
+approximately 20 QPS with zero failures in a 30-second paced Wi-Fi test; that
+measurement has not been repeated with the larger dashboard page.
 
 ## Source references
 

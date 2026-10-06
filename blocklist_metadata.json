@@ -1,0 +1,11 @@
+{
+  "estimated_false_positive_rate_per_suffix": 1.7940980047368649e-09,
+  "filter_bytes": 524288,
+  "hash_count": 12,
+  "indexed_domains": 72233,
+  "rejected_host_fields": 7,
+  "source_date": "02 October 2026 19:58:39 (UTC)",
+  "source_reported_domains": 72233,
+  "source_sha256": "c90ebedf5453c551b8e5c3f164640db5defb79228fd7ba3d7b58b5f7804a421a",
+  "source_url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+}
