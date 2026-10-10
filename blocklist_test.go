@@ -36,3 +36,15 @@ func BenchmarkBuiltInBlocklistLookup(b *testing.B) {
 		blocklistContainsDomain("cdn.eu.doubleclick.net")
 	}
 }
+
+func BenchmarkDNSPolicyBlockedHit(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		shouldBlockDomain("cdn.eu.doubleclick.net")
+	}
+}
+
+func BenchmarkDNSPolicyAllowedMiss(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		shouldBlockDomain("www.example.org")
+	}
+}

@@ -32,7 +32,7 @@ filter or firmware outside your own project.
 
 ## Updating
 
-Run `python3 tools/build_blocklist.py` to fetch the current source and rebuild
+Run `python3 tools/build_blocklist.py` from the repository root to fetch the current source and rebuild
 `blocklist_filter.bin` plus `blocklist_metadata.json`. The script uses only the
 Python standard library, validates the domain names, writes a deterministic
 index, and refuses a snapshot whose estimated false-positive rate exceeds
@@ -51,10 +51,10 @@ and [rule syntax](https://adguard-dns.io/kb/general/dns-filtering-syntax/).
 ```sh
 python3 tools/build_blocklist.py --source /path/to/hosts
 go test ./...
-go test -run '^$' -bench BenchmarkBuiltInBlocklistLookup -benchtime=2s
+go test -run '^$' -bench 'Benchmark(BuiltInBlocklistLookup|DNSPolicy)' -benchmem -benchtime=2s
 ```
 
-`test-dns-podman.sh <pico-ip> <blocked-host>` checks a real sink response
+`tests/integration/test-dns-podman.sh <pico-ip> <blocked-host>` checks a real sink response
 through the Pico. Add a third hostname after configuring it as an allowlist
 exception in `dns_policy.go` to verify it resolves upstream despite a matching
 parent block rule.

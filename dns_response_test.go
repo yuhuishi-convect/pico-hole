@@ -9,7 +9,7 @@ import (
 	"github.com/soypat/lneto/dns"
 )
 
-func makeDNSQuery(t *testing.T, host string, qtype dns.Type) []byte {
+func makeDNSQuery(t testing.TB, host string, qtype dns.Type) []byte {
 	t.Helper()
 	name, err := dns.NewName(host)
 	if err != nil {

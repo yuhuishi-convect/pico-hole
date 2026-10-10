@@ -1,0 +1,65 @@
+{
+  "timestamp_utc": "2026-10-06T05:37:36.086329+00:00",
+  "server": "192.168.68.65",
+  "mode": "blocked",
+  "domain": "doubleclick.net",
+  "query_type": "AAAA",
+  "transport": "UDP/53; one fresh client socket per query",
+  "timeout_seconds": 2,
+  "scheduling": "paced aggregate request rate; missed slots are skipped",
+  "results": [
+    {
+      "target_qps": 1.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 10.0,
+      "attempted_requests": 10,
+      "successful_requests": 10,
+      "failed_requests": 0,
+      "successful_qps": 1.0,
+      "error_percent": 0.0,
+      "latency_ms_successful_only": {
+        "p50": 53.68,
+        "p95": 201.92,
+        "p99": 201.92
+      },
+      "errors": {}
+    },
+    {
+      "target_qps": 5.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 11.862,
+      "attempted_requests": 50,
+      "successful_requests": 49,
+      "failed_requests": 1,
+      "successful_qps": 4.13,
+      "error_percent": 2.0,
+      "latency_ms_successful_only": {
+        "p50": 16.37,
+        "p95": 24.78,
+        "p99": 208.7
+      },
+      "errors": {
+        "TimeoutError: timed out": 1
+      }
+    },
+    {
+      "target_qps": 10.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 10.0,
+      "attempted_requests": 100,
+      "successful_requests": 100,
+      "failed_requests": 0,
+      "successful_qps": 10.0,
+      "error_percent": 0.0,
+      "latency_ms_successful_only": {
+        "p50": 13.95,
+        "p95": 21.98,
+        "p99": 28.36
+      },
+      "errors": {}
+    }
+  ]
+}

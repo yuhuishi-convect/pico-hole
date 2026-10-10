@@ -97,12 +97,13 @@ def main():
     parser.add_argument('--url', default='http://192.168.68.65/')
     parser.add_argument('--seconds', type=float, default=10)
     parser.add_argument('--concurrency', type=int, nargs='+', default=[1, 2, 3, 6])
-    parser.add_argument('--output', default='benchmark-results.json')
+    parser.add_argument('--output', default=str(Path(__file__).with_name('http-results.json')))
     parser.add_argument('--rate', type=float, help='pace requests at this aggregate QPS')
     args = parser.parse_args()
     if args.seconds <= 0 or any(c < 1 for c in args.concurrency) or (args.rate is not None and args.rate <= 0):
         parser.error('seconds and concurrency must be positive')
-    expected = Path(__file__).with_name('index.html').read_bytes()
+    project_root = Path(__file__).resolve().parents[1]
+    expected = (project_root / 'index.html').read_bytes()
     report = {
         'timestamp_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'url': args.url,

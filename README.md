@@ -5,6 +5,13 @@ Join an existing Wi-Fi network, get an IPv4 address using DHCP, and serve
 is needed beyond a Pico W, USB data cable, and a router. The project also has an
 early DNS-filter port based on [ESP_hole](https://github.com/twedds95/ESP_hole).
 
+## Project layout
+
+Firmware source and embedded assets stay at the repository root for TinyGo.
+User guides live in `docs/`, benchmark tools and result data in `benchmarks/`,
+maintenance scripts in `tools/`, and Python/device integration tests in
+`tests/`. Go unit tests remain alongside the firmware package.
+
 ## Configure
 
 Use a **2.4 GHz Wi-Fi network**, normally WPA2 Personal. The Pico W cannot
@@ -26,6 +33,13 @@ You do not need to share the password in chat.
 Edit `index.html` to change the page. CSS and JavaScript can be inline, so the
 page works entirely on your LAN without a CDN or internet access. Only `/` and
 `/index.html` serve the page; separate asset files are not served by this starter.
+
+## Dashboard
+
+![Pico W dashboard](docs/assets/dashboard.png)
+
+This is a point-in-time screenshot; the dashboard shows live values when served
+by the Pico.
 
 ## Build and flash
 
@@ -142,20 +156,21 @@ hosts list (72,233 domains in the checked-in snapshot). Add local exceptions in
 `allowedDomains` or extra entries in `blockedDomains` in `dns_policy.go`. Rules
 match the domain and its subdomains, case-insensitively; allow entries override
 the built-in and custom block rules. Blocked A/AAAA lookups return
-`0.0.0.0`/`::`. See [BLOCKLIST.md](BLOCKLIST.md) for the source, memory use,
-matcher, update, and test details.
+`0.0.0.0`/`::`. See the [user guide](docs/USER_GUIDE.md) for updating the
+built-in list and local rules, and [BLOCKLIST.md](docs/BLOCKLIST.md) for the
+source, memory use, matcher, and validation details.
 
 This initial version handles one DNS question at a time and resolves upstream
 queries serially. Use it as a small LAN filter, not as a high-throughput DNS
 service. It does not configure your router or other clients automatically.
-Run `./test-dns-podman.sh 192.168.68.65` to test A and AAAA lookups from a
+Run `./tests/integration/test-dns-podman.sh 192.168.68.65` to test A and AAAA lookups from a
 disposable Podman client. The script sets DNS only inside that container, so the
 computer running Podman keeps its existing DNS configuration. After adding and
 flashing rules, pass a blocked name and an allowed exception to also check the
 sink response and the allowlist override:
 
 ```sh
-./test-dns-podman.sh 192.168.68.65 img.ads.example safe.ads.example
+./tests/integration/test-dns-podman.sh 192.168.68.65 img.ads.example safe.ads.example
 ```
 
 Host tests cover the compiled common list, case-insensitive suffix matching,
@@ -167,10 +182,8 @@ Keep the explicit `tcpBackoff` function when changing the networking setup.
 
 ## Benchmark
 
-For measured throughput and repeatable load-test commands, see
-[BENCHMARK.md](BENCHMARK.md). The earlier small static-page firmware achieved
-approximately 20 QPS with zero failures in a 30-second paced Wi-Fi test; that
-measurement has not been repeated with the larger dashboard page.
+For measured HTTP and DNS performance, host-side matcher timings, and
+repeatable benchmark commands, see [BENCHMARK.md](docs/BENCHMARK.md).
 
 ## Source references
 

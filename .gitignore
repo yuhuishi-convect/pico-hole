@@ -1,2 +1,4 @@
 /secrets.go
 /build/
+__pycache__/
+*.py[cod]

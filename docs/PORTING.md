@@ -24,6 +24,6 @@ The TinyGo network dependencies already used by this project expose a UDP packet
 - Device-tested: the blocklist-enabled firmware is online at `192.168.68.65`. The isolated Podman client resolved A and AAAA through the Pico and received `0.0.0.0` for `doubleclick.net`; dashboard counters recorded two forwarded and one blocked query. The host DNS settings were unchanged.
 - The local Go override lists are empty; add exceptions or extra blocks in `dns_policy.go`.
 
-Repeat the isolated DNS check with `./test-dns-podman.sh <pico-ip>`. It sets the resolver only inside a short-lived Podman client and checks A/AAAA forwarding. Once rules have been added to `dns_policy.go` and flashed, pass a blocked host and its allowed exception as the second and third arguments to also verify the sink response and allowlist override. The web page remains reachable at `http://<pico-ip>/`.
+Repeat the isolated DNS check with `./tests/integration/test-dns-podman.sh <pico-ip>`. It sets the resolver only inside a short-lived Podman client and checks A/AAAA forwarding. Once rules have been added to `dns_policy.go` and flashed, pass a blocked host and its allowed exception as the second and third arguments to also verify the sink response and allowlist override. The web page remains reachable at `http://<pico-ip>/`.
 
 The first version should not change router-wide DNS settings. That keeps testing scoped to one client and makes rollback as simple as restoring its previous DNS setting.

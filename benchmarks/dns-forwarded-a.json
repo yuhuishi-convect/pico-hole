@@ -1,0 +1,48 @@
+{
+  "timestamp_utc": "2026-10-06T05:35:57.102095+00:00",
+  "server": "192.168.68.65",
+  "mode": "forwarded",
+  "domain": "example.com",
+  "query_type": "A",
+  "transport": "UDP/53; one fresh client socket per query",
+  "timeout_seconds": 2,
+  "scheduling": "paced aggregate request rate; missed slots are skipped",
+  "results": [
+    {
+      "target_qps": 1.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 10.0,
+      "attempted_requests": 9,
+      "successful_requests": 8,
+      "failed_requests": 1,
+      "successful_qps": 0.8,
+      "error_percent": 11.11,
+      "latency_ms_successful_only": {
+        "p50": 94.32,
+        "p95": 255.76,
+        "p99": 255.76
+      },
+      "errors": {
+        "TimeoutError: timed out": 1
+      }
+    },
+    {
+      "target_qps": 2.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 10.0,
+      "attempted_requests": 20,
+      "successful_requests": 20,
+      "failed_requests": 0,
+      "successful_qps": 2.0,
+      "error_percent": 0.0,
+      "latency_ms_successful_only": {
+        "p50": 148.74,
+        "p95": 321.31,
+        "p99": 355.18
+      },
+      "errors": {}
+    }
+  ]
+}

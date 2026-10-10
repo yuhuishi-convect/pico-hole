@@ -1,0 +1,29 @@
+{
+  "timestamp_utc": "2026-10-06T05:38:21.830525+00:00",
+  "server": "192.168.68.65",
+  "mode": "forwarded",
+  "domain": "example.com",
+  "query_type": "AAAA",
+  "transport": "UDP/53; one fresh client socket per query",
+  "timeout_seconds": 2,
+  "scheduling": "paced aggregate request rate; missed slots are skipped",
+  "results": [
+    {
+      "target_qps": 2.0,
+      "concurrency": 1,
+      "active_seconds": 10.0,
+      "elapsed_seconds_including_drain": 10.0,
+      "attempted_requests": 20,
+      "successful_requests": 20,
+      "failed_requests": 0,
+      "successful_qps": 2.0,
+      "error_percent": 0.0,
+      "latency_ms_successful_only": {
+        "p50": 124.06,
+        "p95": 199.89,
+        "p99": 206.21
+      },
+      "errors": {}
+    }
+  ]
+}
